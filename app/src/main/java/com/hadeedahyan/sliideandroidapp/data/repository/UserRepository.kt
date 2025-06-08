@@ -25,7 +25,7 @@ class UserRepository @Inject constructor(
 
             if (res.isSuccessful) {
                 val users = res.body()?.map { it.toDomain(System.currentTimeMillis()) } ?: emptyList()
-                Log.d("UserRepository", "Fetched users: $users")
+               // Log.d("UserRepository", "Fetched users: $users")
                 Result.success(users)
             } else {
                 Result.failure(UserFetchException("API error: ${res.code()}"))
@@ -33,7 +33,7 @@ class UserRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            Log.e("UserRepository", "Error: ${e.message}")
+            //Log.e("UserRepository", "Error: ${e.message}")
             Result.failure(UserFetchException("Network error: ${e.message}"))
         }
     }
