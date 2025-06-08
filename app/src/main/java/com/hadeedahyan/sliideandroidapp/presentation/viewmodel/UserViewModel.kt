@@ -58,7 +58,6 @@ class UserViewModel @Inject constructor(
             _errorMessage.value = null
             val result = addUserUseCase(name, email)
             _isLoading.value = false
-            kotlinx.coroutines.delay(1000)
 
             if (result.isSuccess) {
                 val newUser = result.getOrNull()

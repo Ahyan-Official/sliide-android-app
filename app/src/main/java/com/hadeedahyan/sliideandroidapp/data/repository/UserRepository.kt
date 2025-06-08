@@ -22,7 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class UserRepository @Inject constructor(
     private val apiService: ApiService,
-    private val context: Context
+    private val context: Context,
 ) {
     private val userDao: UserDao by lazy { AppDatabase.getDatabase(context).userDao() }
     suspend fun getUsersLastPage(): Result<List<User>> {
@@ -59,12 +59,12 @@ class UserRepository @Inject constructor(
                 val userDto = UserDto(name = name, email = email, gender = "male", status = "active")
                 val response = apiService.addUser(userDto)
                 if (response.isSuccessful && response.code() == 201) {
-                   // Log.d("UserRepository", "User created: ${response.body()}")
+                  //  Log.d("UserRepository", "User created: ${response.body()}")
                     val createdUserDto = response.body()
                     if (createdUserDto != null && createdUserDto.id != null) {
-                        val createdAt = System.currentTimeMillis()
-                        val user = createdUserDto.toDomain(createdAt)
-                        userDao.insertUser(UserEntity(createdUserDto.id, createdAt))
+                        val fetchTime = System.currentTimeMillis() // Provide fetchTime here
+                        val user = createdUserDto.toDomain(fetchTime)
+                        //userDao.insertUser(UserEntity(createdUserDto.id, fetchTime))
                         continuation.resume(Result.success(user))
                     } else {
                         //Log.e("UserRepository", "No valid user data returned from API")
@@ -75,10 +75,10 @@ class UserRepository @Inject constructor(
                     continuation.resume(Result.failure(UserFetchException("Creation failed: ${response.code()}")))
                 }
             } catch (e: HttpException) {
-                //Log.e("UserRepository", "HTTP error creating user: ${e.message}")
+              //  Log.e("UserRepository", "HTTP error creating user: ${e.message}")
                 continuation.resume(Result.failure(UserFetchException("HTTP error: ${e.message}")))
             } catch (e: Exception) {
-               // Log.e("UserRepository", "Error creating user: ${e.message}")
+              //  Log.e("UserRepository", "Error creating user: ${e.message}")
                 continuation.resume(Result.failure(UserFetchException("Network error: ${e.message}")))
             }
         }
