@@ -5,6 +5,7 @@ import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
 import com.hadeedahyan.sliideandroidapp.domain.usecase.AddUserUseCase
+import com.hadeedahyan.sliideandroidapp.domain.usecase.DeleteUserUseCase
 import com.hadeedahyan.sliideandroidapp.domain.usecase.GetUsersUseCase
 import com.hadeedahyan.sliideandroidapp.presentation.viewmodel.UserViewModel
 import io.mockk.mockk
@@ -41,11 +42,12 @@ class UserRepositoryTest {
     private val fetchTime = Date().time
     private val addUserUseCase: AddUserUseCase = mock()
     private val getUsersUseCase: GetUsersUseCase = mock()
+    private val deleteUserUseCase: DeleteUserUseCase = mock()
     private val testDispatcher = StandardTestDispatcher()
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = UserViewModel(getUsersUseCase, addUserUseCase)
+        viewModel = UserViewModel(getUsersUseCase, addUserUseCase,deleteUserUseCase)
     }
 
     @After
