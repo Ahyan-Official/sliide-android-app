@@ -1,10 +1,6 @@
 package com.hadeedahyan.sliideandroidapp.data.repository
 
 import android.content.Context
-import android.util.Log
-import com.hadeedahyan.sliideandroidapp.data.local.AppDatabase
-import com.hadeedahyan.sliideandroidapp.data.local.UserDao
-import com.hadeedahyan.sliideandroidapp.data.local.UserEntity
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
@@ -13,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
@@ -24,7 +21,9 @@ class UserRepository @Inject constructor(
     private val apiService: ApiService,
     private val context: Context,
 ) {
-    private val userDao: UserDao by lazy { AppDatabase.getDatabase(context).userDao() }
+
+        private val createdAtMap = ConcurrentHashMap<Int, Long>()
+
     suspend fun getUsersLastPage(): Result<List<User>> {
         return try {
             val initialResponse = apiService.getUsers(page = 1)
@@ -38,8 +37,11 @@ class UserRepository @Inject constructor(
 
 
             if (res.isSuccessful) {
-                val users = res.body()?.map { it.toDomain(System.currentTimeMillis()) } ?: emptyList()
-
+                val usersDto = res.body() ?: emptyList()
+                val users = usersDto.map { dto ->
+                    val createdAt = createdAtMap[dto.id] ?: System.currentTimeMillis()
+                    dto.toDomain(createdAt)
+                }
                 Result.success(users)
             } else {
                 Result.failure(UserFetchException("API error: ${res.code()}"))
@@ -63,8 +65,9 @@ class UserRepository @Inject constructor(
                     val createdUserDto = response.body()
                     if (createdUserDto != null && createdUserDto.id != null) {
                         val fetchTime = System.currentTimeMillis() // Provide fetchTime here
+                        createdAtMap[createdUserDto.id] = fetchTime
+
                         val user = createdUserDto.toDomain(fetchTime)
-                        //userDao.insertUser(UserEntity(createdUserDto.id, fetchTime))
                         continuation.resume(Result.success(user))
                     } else {
                         //Log.e("UserRepository", "No valid user data returned from API")
