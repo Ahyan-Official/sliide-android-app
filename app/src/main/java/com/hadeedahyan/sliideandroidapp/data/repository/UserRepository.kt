@@ -33,7 +33,7 @@ class UserRepository @Inject constructor(
 
             if (res.isSuccessful) {
                 val users = res.body()?.map { it.toDomain(System.currentTimeMillis()) } ?: emptyList()
-               // Log.d("UserRepository", "Fetched users: $users")
+
                 Result.success(users)
             } else {
                 Result.failure(UserFetchException("API error: ${res.code()}"))
@@ -41,7 +41,7 @@ class UserRepository @Inject constructor(
             }
 
         } catch (e: Exception) {
-            //Log.e("UserRepository", "Error: ${e.message}")
+
             Result.failure(UserFetchException("Network error: ${e.message}"))
         }
     }
@@ -53,25 +53,25 @@ class UserRepository @Inject constructor(
                 val userDto = UserDto(name = name, email = email, gender = "male", status = "active")
                 val response = apiService.addUser(userDto)
                 if (response.isSuccessful && response.code() == 201) {
-                    Log.d("UserRepository", "User created: ${response.body()}")
+                  //  Log.d("UserRepository", "User created: ${response.body()}")
                     val createdUserDto = response.body()
                     if (createdUserDto != null && createdUserDto.id != null) {
                         val fetchTime = System.currentTimeMillis() // Provide fetchTime here
                         val user = createdUserDto.toDomain(fetchTime)
                         continuation.resume(Result.success(user))
                     } else {
-                        Log.e("UserRepository", "No valid user data returned from API")
+                        //Log.e("UserRepository", "No valid user data returned from API")
                         continuation.resume(Result.failure(UserFetchException("No valid user data returned")))
                     }
                 } else {
-                    Log.e("UserRepository", "Failed to create user, code: ${response.code()}")
+                   // Log.e("UserRepository", "Failed to create user, code: ${response.code()}")
                     continuation.resume(Result.failure(UserFetchException("Creation failed: ${response.code()}")))
                 }
             } catch (e: HttpException) {
-                Log.e("UserRepository", "HTTP error creating user: ${e.message}")
+              //  Log.e("UserRepository", "HTTP error creating user: ${e.message}")
                 continuation.resume(Result.failure(UserFetchException("HTTP error: ${e.message}")))
             } catch (e: Exception) {
-                Log.e("UserRepository", "Error creating user: ${e.message}")
+              //  Log.e("UserRepository", "Error creating user: ${e.message}")
                 continuation.resume(Result.failure(UserFetchException("Network error: ${e.message}")))
             }
         }

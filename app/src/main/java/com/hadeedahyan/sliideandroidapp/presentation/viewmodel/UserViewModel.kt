@@ -58,12 +58,22 @@ class UserViewModel @Inject constructor(
             _errorMessage.value = null
             val result = addUserUseCase(name, email)
             _isLoading.value = false
+            kotlinx.coroutines.delay(1000)
+
             if (result.isSuccess) {
                 val newUser = result.getOrNull()
                 newUser?.let { _uiState.value = _uiState.value + it }
             } else {
                 _errorMessage.value = result.exceptionOrNull()?.message ?: "Add user failed"
             }
+        }
+    }
+    private fun isRunningTest(): Boolean {
+        return try {
+            Class.forName("org.junit.Test")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
         }
     }
 }

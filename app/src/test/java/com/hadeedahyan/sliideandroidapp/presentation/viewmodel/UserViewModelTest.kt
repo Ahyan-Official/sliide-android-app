@@ -1,6 +1,8 @@
 package com.hadeedahyan.sliideandroidapp.presentation.viewmodel
 
+import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
+import com.hadeedahyan.sliideandroidapp.domain.usecase.AddUserUseCase
 import com.hadeedahyan.sliideandroidapp.domain.usecase.GetUsersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,12 +26,13 @@ class UserViewModelTest {
 
     private lateinit var viewModel: UserViewModel
     private val getUsersUseCase: GetUsersUseCase = mock()
+    private val addUserUseCase: AddUserUseCase = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = UserViewModel(getUsersUseCase)
+        viewModel = UserViewModel(getUsersUseCase,addUserUseCase)
     }
 
     @After
@@ -71,4 +74,6 @@ class UserViewModelTest {
         assertEquals(emptyList<User>(), viewModel.uiState.first())
         assertEquals("Network error", viewModel.errorMessage.first())
     }
+
+
 }
