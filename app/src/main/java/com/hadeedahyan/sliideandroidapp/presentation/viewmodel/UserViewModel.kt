@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hadeedahyan.sliideandroidapp.domain.model.User
 import com.hadeedahyan.sliideandroidapp.domain.usecase.GetUsersUseCase
 import com.hadeedahyan.sliideandroidapp.domain.usecase.AddUserUseCase
+import com.hadeedahyan.sliideandroidapp.domain.usecase.DeleteUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase,
-    private val addUserUseCase: AddUserUseCase
+    private val addUserUseCase: AddUserUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<List<User>>(emptyList())
@@ -67,6 +69,17 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteUser(userId: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            val updatedUsers = deleteUserUseCase(userId)
+            _uiState.value = updatedUsers.ifEmpty { _uiState.value.filter { it.id != userId } }
+            _isLoading.value = false
+        }
+    }
+
     private fun isRunningTest(): Boolean {
         return try {
             Class.forName("org.junit.Test")
