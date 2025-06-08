@@ -25,6 +25,8 @@ android {
 
 
     }
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
 
     buildTypes {
         release {
@@ -33,6 +35,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+
+        }
+        debug {
+            buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
         }
 
     }
@@ -86,12 +93,14 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
 
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
