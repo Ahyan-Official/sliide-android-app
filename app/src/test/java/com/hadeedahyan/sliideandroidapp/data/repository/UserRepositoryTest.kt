@@ -1,18 +1,31 @@
 package com.hadeedahyan.sliideandroidapp.data.repository
 
+import android.content.Context
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
+import com.hadeedahyan.sliideandroidapp.domain.usecase.AddUserUseCase
+import com.hadeedahyan.sliideandroidapp.domain.usecase.GetUsersUseCase
+import com.hadeedahyan.sliideandroidapp.presentation.viewmodel.UserViewModel
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import org.junit.jupiter.api.Assertions.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.ResponseBody
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import retrofit2.Response
@@ -21,10 +34,24 @@ import okhttp3.Response as OkHttpResponse
 
 @ExperimentalCoroutinesApi
 class UserRepositoryTest {
-
+    private lateinit var viewModel: UserViewModel
     private val apiService: ApiService = mock()
-    private val repository = UserRepository(apiService)
+    private val context: Context = mockk(relaxed = true)
+    private val repository = UserRepository(apiService,context)
     private val fetchTime = Date().time
+    private val addUserUseCase: AddUserUseCase = mock()
+    private val getUsersUseCase: GetUsersUseCase = mock()
+    private val testDispatcher = StandardTestDispatcher()
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        viewModel = UserViewModel(getUsersUseCase, addUserUseCase)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `getUsersLastPage returns success with users from last page`() = runTest {
@@ -46,7 +73,7 @@ class UserRepositoryTest {
         val result = repository.getUsersLastPage()
 
         assertTrue(result.isSuccess)
-        val expectedUsers = usersDto.map { User(it.id, it.name, it.email, it.gender, it.status, fetchTime) }
+        val expectedUsers = usersDto.map { User(it.id!!, it.name, it.email, it.gender, it.status, fetchTime) }
         assertEquals(expectedUsers.map { it.copy(createdAt = null) }, result.getOrNull()?.map { it.copy(createdAt = null) })
     }
 
@@ -110,7 +137,12 @@ class UserRepositoryTest {
         val result = repository.getUsersLastPage()
 
         assertTrue(result.isSuccess)
-        val expectedUsers = usersDto.map { User(it.id, it.name, it.email, it.gender, it.status, fetchTime) }
+        val expectedUsers = usersDto.map { User(it.id!!, it.name, it.email, it.gender, it.status, fetchTime) }
         assertEquals(expectedUsers.map { it.copy(createdAt = null) }, result.getOrNull()?.map { it.copy(createdAt = null) })
     }
+
+
+
+
+
 }

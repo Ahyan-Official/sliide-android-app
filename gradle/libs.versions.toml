@@ -20,7 +20,10 @@ festAssert = "2.0M10"
 lifecycleViewmodelCompose = "2.8.7"
 junitJupiter = "5.8.1"
 mockitoAndroid = "5.12.0"
-
+androidx-arch-core = "2.2.0"
+mockk = "1.13.13"
+room = "2.6.1"
+testCore = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +39,11 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "composeUiTest" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockitoAndroid" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+test-core = { module = "androidx.test:core", version.ref = "testCore" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
@@ -56,7 +64,8 @@ mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", versio
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
-
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-core" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
