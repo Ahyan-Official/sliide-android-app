@@ -1,6 +1,7 @@
 package com.hadeedahyan.sliideandroidapp.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
@@ -22,7 +23,7 @@ class UserRepository @Inject constructor(
     private val context: Context,
 ) {
 
-        private val createdAtMap = ConcurrentHashMap<Int, Long>()
+    val createdAtMap = ConcurrentHashMap<Int, Long>()
 
     suspend fun getUsersLastPage(): Result<List<User>> {
         return try {
@@ -87,6 +88,27 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteUser(userId: Int): Result<Unit> = suspendCoroutine { continuation ->
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.deleteUser(userId)
+                if (response.isSuccessful && response.code() == 204) {
+                    createdAtMap.remove(userId) // Remove from local map on success
+                    //Log.d("UserRepository", "User with id $userId deleted")
+                    continuation.resume(Result.success(Unit))
+                } else {
+                   // Log.e("UserRepository", "Failed to delete user, code: ${response.code()}")
+                    continuation.resume(Result.failure(UserFetchException("Delete failed: ${response.code()}")))
+                }
+            } catch (e: HttpException) {
+              // Log.e("UserRepository", "HTTP error deleting user: ${e.message}")
+                continuation.resume(Result.failure(UserFetchException("HTTP error: ${e.message}")))
+            } catch (e: Exception) {
+               // Log.e("UserRepository", "Error deleting user: ${e.message}")
+                continuation.resume(Result.failure(UserFetchException("Delete failed: ${e.message}")))
+            }
+        }
+    }
 
     private fun extractLastPage(linkHeader: String): Int? {
         val pattern = Pattern.compile("<https://gorest\\.co\\.in/public/v2/users\\?page=(\\d+)>; rel=\"last\"")

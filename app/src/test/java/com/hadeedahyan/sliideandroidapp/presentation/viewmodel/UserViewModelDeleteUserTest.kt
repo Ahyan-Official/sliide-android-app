@@ -20,12 +20,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserViewModelAddUserTest {
+class UserViewModelDeleteUserTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -33,17 +33,21 @@ class UserViewModelAddUserTest {
     private val getUsersUseCase: GetUsersUseCase = mockk()
     private val addUserUseCase: AddUserUseCase = mockk()
     private val deleteUserUseCase: DeleteUserUseCase = mockk()
-
     private lateinit var viewModel: UserViewModel
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        // Mock getUsersUseCase to return an empty list to handle init block
+        // Mock getUsersUseCase for init block
         coEvery { getUsersUseCase.invoke() } returns Result.success(emptyList())
-        viewModel = UserViewModel(getUsersUseCase, addUserUseCase,deleteUserUseCase)
+        // NEW: Mock addUserUseCase for setup
+        coEvery { addUserUseCase("John Doe", "john@example.com") } returns Result.success(
+            User(id = 1, name = "John Doe", email = "john@example.com", gender = "male", status = "active", createdAt = System.currentTimeMillis())
+        )
+        viewModel = UserViewModel(getUsersUseCase, addUserUseCase, deleteUserUseCase)
+        // Initialize uiState with a test user
+        viewModel.addUser("John Doe", "john@example.com")
     }
 
     @After
@@ -52,48 +56,42 @@ class UserViewModelAddUserTest {
     }
 
     @Test
-    fun `addUser success updates uiState with new user and clears error`() = runTest {
+    fun `deleteUser success removes user from uiState and clears error`() = runTest {
         // Arrange
-        val newUser = User(
-            id = 1,
-            name = "John Doe",
-            email = "john@example.com",
-            gender = "male",
-            status = "active",
-            createdAt = System.currentTimeMillis()
-        )
-        coEvery { addUserUseCase("John Doe", "john@example.com") } returns Result.success(newUser)
+        val userId = 1
+        coEvery { deleteUserUseCase(userId) } returns emptyList() // Simulate successful deletion
 
         // Act
-        viewModel.addUser("John Doe", "john@example.com")
+        viewModel.deleteUser(userId)
 
         // Assert
         val uiState = viewModel.uiState.first()
         val isLoading = viewModel.isLoading.first()
         val errorMessage = viewModel.errorMessage.first()
 
-        assertTrue(uiState.contains(newUser), "New user should be added to uiState")
-        assertEquals(1, uiState.size, "uiState should contain exactly one user")
-        assertEquals(false, isLoading, "isLoading should be false after operation")
+        assertTrue(uiState.isEmpty(), "uiState should be empty after deletion")
+        assertFalse(isLoading, "isLoading should be false after operation")
         assertNull(errorMessage, "errorMessage should be null on success")
     }
 
     @Test
-    fun `addUser failure sets error message and does not update uiState`() = runTest {
+    fun `deleteUser failure retains uiState and clears error`() = runTest {
         // Arrange
-        val error = UserFetchException("Failed to add user: 400")
-        coEvery { addUserUseCase("John Doe", "john@example.com") } returns Result.failure(error)
+        val userId = 1
+        val initialUser = User(id = userId, name = "John Doe", email = "john@example.com", gender = "male", status = "active", createdAt = System.currentTimeMillis())
+        coEvery { deleteUserUseCase(userId) } returns listOf(initialUser) // Simulate failure
 
         // Act
-        viewModel.addUser("John Doe", "john@example.com")
+        viewModel.deleteUser(userId)
 
         // Assert
         val uiState = viewModel.uiState.first()
         val isLoading = viewModel.isLoading.first()
         val errorMessage = viewModel.errorMessage.first()
 
-        assertTrue(uiState.isEmpty(), "uiState should remain empty on failure")
-        assertEquals(false, isLoading, "isLoading should be false after operation")
-        assertEquals(error.message, errorMessage, "errorMessage should match the exception message")
+        assertTrue(uiState.contains(initialUser), "uiState should retain the user on failure")
+        assertEquals(1, uiState.size, "uiState should contain exactly one user")
+        assertFalse(isLoading, "isLoading should be false after operation")
+        assertNull(errorMessage, "errorMessage should be null as no error is set")
     }
 }

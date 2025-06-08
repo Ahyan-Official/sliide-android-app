@@ -2,6 +2,7 @@ package com.hadeedahyan.sliideandroidapp.di
 
 
 import android.content.Context
+import android.util.Log
 import com.hadeedahyan.sliideandroidapp.BuildConfig
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.repository.UserRepository
@@ -23,13 +24,25 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        val logging = HttpLoggingInterceptor { message ->
+            Log.d("OkHttp", message)
+        }.apply { level = HttpLoggingInterceptor.Level.BODY }
+        val apiKey = BuildConfig.API_KEY
+        if (apiKey.isEmpty()) {
+            Log.e("AppModule", "API_KEY is empty in BuildConfig")
+        } else {
+            Log.d("AppModule", "Using API_KEY: $apiKey")
+        }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
             .addInterceptor { chain ->
-                chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer ${BuildConfig.API_KEY}")
-                    .build().let { chain.proceed(it) }
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $apiKey")
+                    .addHeader("Accept", "application/json")
+                    .addHeader("Content-Type", "application/json")
+                    .build()
+                Log.d("Request", "URL: ${request.url}, Headers: ${request.headers}")
+                chain.proceed(request)
             }
             .build()
     }
