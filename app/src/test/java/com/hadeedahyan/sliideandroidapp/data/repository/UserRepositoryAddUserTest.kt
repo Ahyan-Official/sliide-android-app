@@ -1,8 +1,10 @@
 package com.hadeedahyan.sliideandroidapp.data.repository
 
+import android.content.Context
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -45,11 +47,11 @@ class UserRepositoryAddUserTest {
     private val testDispatcher = StandardTestDispatcher()
     private val testScope = TestCoroutineScope(testDispatcher)
     private val fetchTime = Date().time
-
+    private val context: Context = mockk(relaxed = true) // Mock Context
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = UserRepository(apiService)
+        repository = UserRepository(apiService,context)
     }
 
     @After

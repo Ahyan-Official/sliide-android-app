@@ -136,4 +136,9 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(kotlin("test"))
 
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+    implementation(libs.room.ktx)
+
+    androidTestImplementation(libs.test.core)
 }

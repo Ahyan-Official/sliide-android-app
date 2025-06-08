@@ -1,11 +1,13 @@
 package com.hadeedahyan.sliideandroidapp.data.repository
 
+import android.content.Context
 import com.hadeedahyan.sliideandroidapp.data.remote.ApiService
 import com.hadeedahyan.sliideandroidapp.data.remote.dto.UserDto
 import com.hadeedahyan.sliideandroidapp.domain.model.User
 import com.hadeedahyan.sliideandroidapp.domain.usecase.AddUserUseCase
 import com.hadeedahyan.sliideandroidapp.domain.usecase.GetUsersUseCase
 import com.hadeedahyan.sliideandroidapp.presentation.viewmodel.UserViewModel
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import org.junit.jupiter.api.Assertions.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,8 +36,8 @@ import okhttp3.Response as OkHttpResponse
 class UserRepositoryTest {
     private lateinit var viewModel: UserViewModel
     private val apiService: ApiService = mock()
-
-    private val repository = UserRepository(apiService,)
+    private val context: Context = mockk(relaxed = true)
+    private val repository = UserRepository(apiService,context)
     private val fetchTime = Date().time
     private val addUserUseCase: AddUserUseCase = mock()
     private val getUsersUseCase: GetUsersUseCase = mock()
