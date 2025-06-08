@@ -37,6 +37,13 @@ class UserViewModel @Inject constructor(
             _isLoading.value = false
             _uiState.value = if (result.isSuccess) result.getOrNull() ?: emptyList() else emptyList()
             _errorMessage.value = result.exceptionOrNull()?.message
+            if (result.isSuccess) {
+                _uiState.value = result.getOrNull() ?: emptyList()
+                _errorMessage.value = null
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.message ?: "Unknown error"
+
+            }
         }
     }
 }
