@@ -13,6 +13,7 @@ The Sliide User Management App serves as a practical example of best practices i
 - [Architecture](#architecture)
 - [Technologies](#technologies)
 - [Project Structure](#project-structure)
+- [Unit Testing](#unit-testing)
 - [Branching Strategy](#branching-strategy)
 
 ## Features
@@ -20,7 +21,7 @@ The Sliide User Management App serves as a practical example of best practices i
 - Add new users with real-time input validation.
 - Delete users via a confirmation dialog.
 - Modern, responsive UI built with Jetpack Compose.
-- Robust error handling and loading state management.
+- Error handling and loading state management.
 
 ## Architecture
 This app follows **Clean Architecture**, dividing the codebase into:
@@ -39,6 +40,16 @@ This structure ensures decoupling, making the app easy to test and extend.
 - **Room**: Local persistence (optional, integrated if needed).
 - **Mockito & MockK**: Mocking for unit and UI tests.
 - **JUnit & Espresso**: Testing frameworks.
+
+## Unit Testing
+The app includes comprehensive unit tests to ensure reliability and robustness across its layers:
+- **UserViewModelTest**: Verifies `fetchUsers` success and failure cases, testing loading state, `uiState` updates, and error handling using Mockito and coroutines.
+- **UserViewModelDeleteUserTest**: Confirms `deleteUser` success (removes user from `uiState`, clears errors) and failure (retains `uiState`, handles no error) with MockK and coroutines.
+- **UserViewModelAddUserTest**: Validates `addUser` success (updates `uiState` with new user) and failure (sets error message, preserves `uiState`) using MockK and coroutines.
+- **UserRepositoryTest**: Tests `getUsersLastPage` for success, API errors, and network failures, mocking `ApiService` with Mockito.
+- **UserRepositoryDeleteUserTest**: Ensures `deleteUser` success (removes user from `createdAtMap`) and HTTP error handling with MockK.
+- **UserRepositoryAddUserTest**: Verifies `addUser` success (returns created user) and HTTP error cases with MockK.
+- **Coverage**: Tests cover core functionality, edge cases, and state management.
 
 ## Branching Strategy
 The project employs a disciplined branching model:
