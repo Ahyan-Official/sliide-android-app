@@ -25,7 +25,7 @@ The Sliide User Management App serves as a practical example of best practices i
 ## Architecture
 This app follows **Clean Architecture**, dividing the codebase into:
 - **Presentation**: UI logic in `screen` (e.g., `UserListScreen`) and `viewmodel` (e.g., `UserViewModel`).
-- **Domain**: Business logic and entities in `model` (e.g., `User`) and `usecase` (e.g., `GetUsersUseCase`).
+- **Domain**: Business logic and entities in `model` (e.g., `User`) and `usecase` (e.g., `GetUsersUseCase`, `AddUsersUseCase`,`DeleteUsersUseCase`).
 - **Data**: Data management in `data` (e.g., `UserRepository`, `ApiService`, `UserDto`).
 - **DI**: Dependency injection via Hilt in `di` (e.g., `AppModule`).
 
