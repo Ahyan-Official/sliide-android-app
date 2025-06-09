@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <application
+        android:name="dagger.hilt.android.testing.HiltTestApplication">
+        <uses-library android:name="android.test.runner" />
+    </application>
+
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.hadeedahyan.sliideandroidapp" />
+    <instrumentation
+        android:name="com.hadeedahyan.sliideandroidapp.HiltTestRunner"
+        android:targetPackage="com.hadeedahyan.sliideandroidapp"
+        android:label="Hilt Tests" />
+</manifest>
