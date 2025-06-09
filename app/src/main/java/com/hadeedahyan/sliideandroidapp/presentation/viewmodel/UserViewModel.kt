@@ -38,8 +38,6 @@ class UserViewModel @Inject constructor(
             _isLoading.value = true
             _errorMessage.value = null
             kotlinx.coroutines.delay(1000)
-
-
             val result = getUsersUseCase()
             _isLoading.value = false
             _uiState.value = if (result.isSuccess) result.getOrNull() ?: emptyList() else emptyList()

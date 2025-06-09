@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,7 +66,7 @@ fun UserListScreen(modifier: Modifier = Modifier) {
 
         ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).testTag("LoadingIndicator"))
         } else if (errorMessage != null) {
             Text(
                 text = "Error: $errorMessage",
@@ -95,7 +96,7 @@ fun UserListScreen(modifier: Modifier = Modifier) {
                 onClick = { showDialog = true },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp,10.dp)
+                    .padding(16.dp,10.dp).testTag("AddFab")
             ) {
                 Text("+")
             }
@@ -115,7 +116,7 @@ fun UserListScreen(modifier: Modifier = Modifier) {
                             label = { Text("Name") },
                             isError = nameError != null,
                             supportingText = { nameError?.let { Text(it) } },
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                            modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("NameField")
                         )
                         OutlinedTextField(
                             value = email,
@@ -126,7 +127,7 @@ fun UserListScreen(modifier: Modifier = Modifier) {
                             label = { Text("Email") },
                             isError = emailError != null,
                             supportingText = { emailError?.let { Text(it) } },
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                            modifier = Modifier.fillMaxWidth().padding(8.dp).testTag("EmailField")
                         )
                     }
                 },
@@ -181,6 +182,7 @@ fun UserCard(user: User, onLongPress: (User) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .testTag("UserCard_${user.id}")
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongPress(user) }
