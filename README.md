@@ -1,11 +1,9 @@
-# Sliide Android App Test
+Welcome to the ** User Management Android App**, a robust Android application exemplifying **Clean Architecture** with comprehensive **unit testing**. This app enables user management (add, view, delete) using Jetpack Compose, Hilt for dependency injection, and Retrofit for API integration, designed as a showcase for modern Android development practices.
 
-Welcome to the **Sliide User Management Android App**, a robust Android application exemplifying **Clean Architecture** with comprehensive **unit testing**. This app enables user management (add, view, delete) using Jetpack Compose, Hilt for dependency injection, and Retrofit for API integration, designed as a showcase for modern Android development practices.
-
-![App Screenshots](ss.png) 
+![App Screenshots](ss3.png) 
 
 ## Overview
-The Sliide User Management App serves as a practical example of best practices in Android development, emphasizing modularity, testability, and maintainability. It leverages a layered architecture and extensive test coverage to ensure a reliable user experience.
+The User Management App serves as a practical example of best practices in Android development, emphasizing modularity, testability, and maintainability. It leverages a layered architecture and extensive test coverage to ensure a reliable user experience.
 
 ## Table of Contents
 - [Overview](#overview)
